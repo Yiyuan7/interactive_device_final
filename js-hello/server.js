@@ -30,7 +30,7 @@ five.Board().on('ready', function() {
   var a = new five.Servo(9);
   var b= new five.Servo(10);
   var servos = new five.Servos([a, b]);
-  let initialPosition = [90, 40];
+  let initialPosition = [90, 20];
   moveToTargetPosition(a, initialPosition[0]);
   moveToTargetPosition(b, initialPosition[1]);
   a.on('move:complete', servoAFinishHandler);
@@ -126,7 +126,7 @@ function swipTest(direction) {
 function doubleClickTest() {
   // Create an animation segment object
   doubleClickAnimation.enqueue({
-    duration: 1500,
+    duration: 550,
     cuePoints: [0, 0.25, 0.5, 0.75, 1.0],
     keyFrames: [ {degrees: initialPosition[0]}, {degrees: initialPosition[0] + 20}, {degrees: initialPosition[0]}, {degrees: initialPosition[0] + 20}, {degrees: initialPosition[0]}]
   });
@@ -138,7 +138,7 @@ function swipeAnimationTest(direction) {
   switch (direction) {
     case GestureEnum.swipeUp:
       swipeAnimations.enqueue({
-        duration: 3000,
+        duration: 2000,
         cuePoints: [0, 0.33, 0.66, 1.0],
         keyFrames: [
           [{degrees: initialPosition[0] + 20}, {degrees: initialPosition[0] + 20}, {degrees: initialPosition[0]}, {degrees: initialPosition[0]}],
@@ -149,11 +149,11 @@ function swipeAnimationTest(direction) {
       break;
     case GestureEnum.swipeDown:
       swipeAnimations.enqueue({
-        duration: 3000,
+        duration: 2000,
         cuePoints: [0, 0.33, 0.66, 1.0],
         keyFrames: [
           [{degrees: initialPosition[0] + 20}, {degrees: initialPosition[0] + 20}, {degrees: initialPosition[0]}, {degrees: initialPosition[0]}],
-          [{degrees: initialPosition[1]}, {degrees: initialPosition[1] - 20}, {degrees: initialPosition[1] - 20}, {degrees: initialPosition[1]}]
+          [{degrees: initialPosition[1]}, {degrees: initialPosition[1] - 40}, {degrees: initialPosition[1] - 40}, {degrees: initialPosition[1]}]
         ]
       });
       console.log('Played swipe down animation');
@@ -175,55 +175,31 @@ io.on('connection', function(client) {
   console.log("client connected");
 
  // NOTE: Method 1: manually syncronize events ,can't trigger swipeUp & swipeDown together. need to syncronouse swiping down & up together
- //  swipTest(GestureEnum.swipeUp);
+  // swipTest(GestureEnum.swipeUp);
   // swipTest(GestureEnum.swipeDown);
 
   // NOTE: Double Click
-//  doubleClickTest();
+  // doubleClickTest();
 
   // NOTE: Swipe Animation
-  swipeAnimationTest(GestureEnum.swipeUp);
+  // swipeAnimationTest(GestureEnum.swipeUp);
 //  swipeAnimationTest(GestureEnum.swipeDown);
 //  swipeAnimationTest(GestureEnum.swipeUp);
-//  swipeAnimationTest(GestureEnum.swipeDown);
+ // swipeAnimationTest(GestureEnum.swipeDown);
 
   client.on('NoseUp',function(){
     console.log("I am server, Nose Up");
-    console.log(anglea);
-    // a.to(90, 500);
-    // a.to(180, 500);
-    // a.to(90, 500);
-    a.to(anglea+180, 500);
-    switch (anglea) {
-      case 0:
-        anglea = -180;
-        console.log(anglea);
-        break;
-      case -180:
-        anglea = 0
-        console.log(anglea);
-    }
+    swipTest(GestureEnum.swipeUp);
+  });
 
-    // b.to(angleb+20, 500);
-    // switch (angleb) {
-    //   case 0:
-    //     angleb = -20;
-    //     break;
-    //   case -20:
-    //     angleb = 0
-    // }
+  client.on('WristLeft',function(){
+    console.log("I am server, WristLeft");
+    swipTest(GestureEnum.swipeDown);
+  });
 
-
-
-    //a.to(90, 500);
-    //a.sweep()
-
-    // servos.min();
-
-
-    // servo2.to(20);
-    // servo1.home();
-    // servo2.home();
+  client.on('WristCross',function(){
+    console.log("I am server, WristCross");
+    doubleClickTest();
   });
 
   //

@@ -81,6 +81,7 @@ function setup() {
   // with an array every time new poses are detected
   poseNet.on('pose', function(results) {
     poses = results;
+    console.log('Poses = ', poses);
     count++;
     let pose = poses[0].pose;
     if (prevNose && prevleftKnee && prevLeft && prevRight && prevrightKnee&&count%5==0) {
