@@ -27,7 +27,6 @@ app.get('/', function(req, res, next) {
 
 five.Board().on('ready', function() {
   console.log('Arduino is ready.');
-
   var a = new five.Servo(9);
   var b= new five.Servo(10);
   var servos = new five.Servos([a, b]);
@@ -36,6 +35,9 @@ five.Board().on('ready', function() {
   moveToTargetPosition(b, initialPosition[1]);
   a.on('move:complete', servoAFinishHandler);
   b.on('move:complete', servoBFinishHandler);
+
+  var doubleClickAnimation = new five.Animation(a);
+  var swipeAnimations = new five.Animation(servos);
 
 function wait(ms){
    var start = new Date().getTime();
@@ -121,6 +123,46 @@ function swipTest(direction) {
   moveToTargetPosition(a, aTargetPosition);
 }
 
+function doubleClickTest() {
+  // Create an animation segment object
+  doubleClickAnimation.enqueue({
+    duration: 1500,
+    cuePoints: [0, 0.25, 0.5, 0.75, 1.0],
+    keyFrames: [ {degrees: initialPosition[0]}, {degrees: initialPosition[0] + 20}, {degrees: initialPosition[0]}, {degrees: initialPosition[0] + 20}, {degrees: initialPosition[0]}]
+  });
+  console.log('Played double click animation');
+}
+
+function swipeAnimationTest(direction) {
+  // Create an animation segment object
+  switch (direction) {
+    case GestureEnum.swipeUp:
+      swipeAnimations.enqueue({
+        duration: 3000,
+        cuePoints: [0, 0.33, 0.66, 1.0],
+        keyFrames: [
+          [{degrees: initialPosition[0] + 20}, {degrees: initialPosition[0] + 20}, {degrees: initialPosition[0]}, {degrees: initialPosition[0]}],
+          [{degrees: initialPosition[1]}, {degrees: initialPosition[1] + 20}, {degrees: initialPosition[1] + 20}, {degrees: initialPosition[1]}]
+        ]
+      });
+      console.log('Played swipe up animation');
+      break;
+    case GestureEnum.swipeDown:
+      swipeAnimations.enqueue({
+        duration: 3000,
+        cuePoints: [0, 0.33, 0.66, 1.0],
+        keyFrames: [
+          [{degrees: initialPosition[0] + 20}, {degrees: initialPosition[0] + 20}, {degrees: initialPosition[0]}, {degrees: initialPosition[0]}],
+          [{degrees: initialPosition[1]}, {degrees: initialPosition[1] - 20}, {degrees: initialPosition[1] - 20}, {degrees: initialPosition[1]}]
+        ]
+      });
+      console.log('Played swipe down animation');
+      break;
+    default:
+      return;
+  }
+}
+
 // Listen to the web socket connection
 io.on('connection', function(client) {
   // client.on('triggerservo', function() {
@@ -132,10 +174,18 @@ io.on('connection', function(client) {
   // });
   console.log("client connected");
 
- // NOTE: can't trigger swipeUp & swipeDown together. need to syncronouse swiping down & up together
-
+ // NOTE: Method 1: manually syncronize events ,can't trigger swipeUp & swipeDown together. need to syncronouse swiping down & up together
  //  swipTest(GestureEnum.swipeUp);
-  swipTest(GestureEnum.swipeDown);
+  // swipTest(GestureEnum.swipeDown);
+
+  // NOTE: Double Click
+//  doubleClickTest();
+
+  // NOTE: Swipe Animation
+  swipeAnimationTest(GestureEnum.swipeUp);
+//  swipeAnimationTest(GestureEnum.swipeDown);
+//  swipeAnimationTest(GestureEnum.swipeUp);
+//  swipeAnimationTest(GestureEnum.swipeDown);
 
   client.on('NoseUp',function(){
     console.log("I am server, Nose Up");
