@@ -1,0 +1,24 @@
+{
+  "name": "blink",
+  "version": "1.0.0",
+  "description": "blink it",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:fabiantheblind/johnny-five-is-alive.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.4",
+    "firmata": "^1.0.0",
+    "johnny-five": "^1.0.0",
+    "serialport": "^7.1.0",
+    "socket-io": "^1.0.0",
+    "socket.io": "^2.2.0"
+  }
+}
